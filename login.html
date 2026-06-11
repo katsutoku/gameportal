@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログイン | ADVゲームポータル</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="logo">🎮 ADV Portal</div>
+        <nav class="nav-menu">
+            <a href="index.html">ホーム</a>
+        </nav>
+    </header>
+
+    <main class="container" style="display: flex; justify-content: center; align-items: center; min-height: 70vh;">
+        <div class="login-card">
+            <h2>ログイン</h2>
+            <p style="color: #aaa; font-size: 0.85rem; margin-bottom: 20px;">※テスト用アカウント: admin / admin123</p>
+            
+            <div id="errorMsg" style="color: #ff3838; font-size: 0.9rem; margin-bottom: 15px; min-height: 20px;"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">ユーザー名</label>
+                    <input type="text" id="username" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="password">パスワード</label>
+                    <input type="password" id="password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 20px;">ログインする</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- ログイン画面専用のスタイル記述。後でstyle.cssの末尾に移してもOKです -->
+    <style>
+        .login-card {
+            background: #1f1f1f;
+            padding: 40px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        .login-card h2 { margin-top: 0; margin-bottom: 5px; }
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .form-group label { font-size: 0.9rem; color: #ccc; }
+        .form-group input {
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .form-group input:focus {
+            border-color: #e50914;
+            outline: none;
+        }
+    </style>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); // 通常のページ遷移をストップ
+            
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.textContent = '';
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                // PHPの認証APIへ非同期通信
+                const response = await fetch('api/auth.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type: application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // ログイン成功ならホーム画面へ
+                    window.location.href = 'index.html';
+                } else {
+                    errorMsg.textContent = data.message;
+                }
+            } catch (error) {
+                errorMsg.textContent = '通信エラーが発生しました。';
+            }
+        });
+    </script>
+</body>
+</html>

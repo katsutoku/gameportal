@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADVゲームポータル</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- [ヘッダー] -->
+    <header class="main-header">
+        <div class="logo">🎮 ADV Portal</div>
+        <nav class="nav-menu">
+            <a href="index.html" class="active">ホーム</a>
+            <a href="mygames.html">マイゲーム</a>
+            <a href="settings.html">設定</a>
+        </nav>
+        <div class="user-menu">
+            <a href="login.html" class="btn-login">ログイン</a>
+        </div>
+    </header>
+
+    <!-- [ヒーローヘッダー] -->
+    <section class="hero-header">
+        <div class="hero-content">
+            <h1>注目の新作ADV、本日配信開始</h1>
+            <p>あなたの選択が、物語の結末を変える。</p>
+            <button class="btn-primary">今すぐプレイ</button>
+        </div>
+    </section>
+
+    <!-- [メインコンテンツ] -->
+    <main class="container">
+
+        <!-- コンテンツブロック（無限スクロール） -->
+        <section class="content-block">
+            <h2>おすすめのADV</h2>
+            <!-- 横スクロールリスト A -->
+            <div class="scroll-row" id="list-a">
+                <!-- JSでコンテンツを挿入 -->
+                <div class="loading-trigger" data-target="A"></div>
+            </div>
+
+            <h2>人気のADV</h2>
+            <!-- 横スクロールリスト B -->
+            <div class="scroll-row" id="list-b">
+                <!-- JSでコンテンツを挿入 -->
+                <div class="loading-trigger" data-target="B"></div>
+            </div>
+        </section>
+
+        <!-- 大コンテンツ（ホバー動画ポップアップ用） -->
+        <section class="featured-block">
+            <h2>ピックアップタイトル</h2>
+            <div class="featured-card" id="featuredGame">
+                <!-- 通常時のサムネイル -->
+                <img src="https://placeholder.com" alt="大サムネイル" class="featured-thumb">
+
+                <!-- ホバー時に再生する動画（ミュート必須、ループ再生、インライン再生） -->
+                <!-- ※テスト用にCCライセンスのフリー動画URLを設定しています -->
+                <video class="featured-video" loop muted playsinline>
+                    <source src="https://googleapis.com" type="video/mp4">
+                </video>
+
+                <div class="featured-info">
+                    <h3>レイヤード・ストーリー</h3>
+                    <p>心を揺さぶる至高のSFアドベンチャーゲーム。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ランキングブロック -->
+        <!-- [index.html の <section class="ranking-block"> 周りを以下に差し替え] -->
+        <section class="ranking-block">
+            <div class="ranking-header">
+                <h2>総合ランキング</h2>
+                <!-- ランキング切り替えタブ -->
+                <div class="ranking-tabs">
+                    <button class="tab-btn active" data-rank="A">人気急上昇</button>
+                    <button class="tab-btn" data-rank="B">高評価</button>
+                    <button class="tab-btn" data-rank="C">売上トップ</button>
+                </div>
+            </div>
+
+            <!-- ランキングリストのコンテナ -->
+            <div class="ranking-list" id="rankingList">
+                <!-- JSでここにランキングアイテム（1位〜5位など）が挿入されます -->
+            </div>
+        </section>
+    </main>
+
+    <!-- [フッター] -->
+    <footer class="main-footer">
+        <p>&copy; 2026 ADVゲームポータル. All Rights Reserved.</p>
+    </footer>
+
+    <script src="js/home.js"></script>
+</body>
+
+</html>

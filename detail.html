@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ゲーム詳細 | ADVゲームポータル</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 詳細画面専用のスタイルを少しだけ直書き、またはstyle.cssの末尾に追記してください -->
+</head>
+<body>
+
+    <!-- [ヘッダー] -->
+    <header class="main-header">
+        <div class="logo">🎮 ADV Portal</div>
+        <nav class="nav-menu">
+            <a href="index.html">ホーム</a>
+            <a href="mygames.html">マイゲーム</a>
+            <a href="settings.html">設定</a>
+        </nav>
+    </header>
+
+    <!-- [メインコンテンツ] -->
+    <main class="container detail-container">
+        
+        <!-- 左側：メディア＆基本情報 -->
+        <div class="detail-main">
+            <!-- 大サムネイル -->
+            <div class="main-preview">
+                <img id="mainVisual" src="https://placeholder.com..." alt="大サムネイル">
+            </div>
+            
+            <!-- 小サムネイルのリスト（横スクロール） -->
+            <div class="thumb-carousel" id="thumbCarousel">
+                <!-- JSで複数の小画像を挿入 -->
+            </div>
+
+            <!-- 情報部 -->
+            <div class="game-info-section">
+                <div class="info-header">
+                    <span class="category-badge" id="gameCategory">---</span>
+                    <span class="release-date" id="gameRelease">配信日: ---</span>
+                </div>
+                <h1 id="gameTitle">作品タイトル</h1>
+                <p class="description" id="gameDescription">ゲームの紹介文がここに表示されます。</p>
+            </div>
+        </div>
+
+        <!-- 右側：サイドコンテンツ（実績・DLC・お知らせ） -->
+        <div class="detail-sidebar">
+            
+            <!-- アチーブメント -->
+            <div class="sidebar-card">
+                <h3>アチーブメント (実績)</h3>
+                <div class="achievement-list" id="achievementList">
+                    <!-- JSで挿入 -->
+                </div>
+            </div>
+
+            <!-- 拡張コンテンツ -->
+            <div class="sidebar-card">
+                <h3>追加コンテンツ (DLC)</h3>
+                <div class="dlc-list" id="dlcList">
+                    <!-- JSで挿入 -->
+                </div>
+            </div>
+
+            <!-- お知らせ一覧 -->
+            <div class="sidebar-card">
+                <h3>おしらせ</h3>
+                <ul class="news-list" id="newsList">
+                    <!-- JSで挿入 -->
+                </ul>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 ADVゲームポータル. All Rights Reserved.</p>
+    </footer>
+
+    <script src="js/detail.js"></script>
+</body>
+</html>

@@ -1,36 +1,42 @@
 <?php
-// ブラウザにJSONとして返すためのヘッダー設定
 header('Content-Type: application/json; charset=utf-8');
 
-// フロントから送られてきたパラメータを取得（デフォルト値を設定）
 $category = isset($_GET['category']) ? $_GET['category'] : 'A';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
-// 最大3ページまでデータが存在することにする（テスト用）
-$maxPages = 3;
-$hasMore = $page < $maxPages;
+$limit = 5;
+$offset = ($page - 1) * $limit;
 
-$games = [];
+$dsn = 'mysql:host=localhost;dbname=gameportal;charset=utf8mb4';
+$db_user = 'root';
+$db_pass = '';
 
-// 1ページあたり5個のダミーデータを生成
-if ($page <= $maxPages) {
-    for ($i = 1; $i <= 5; $i++) {
-        $id = (($page - 1) * 5) + $i;
-        $games[] = [
-            "id" => $id,
-            "title" => "【カテゴリ{$category}】ADVタイトル #{$id}",
-            "thumbnail" => "https://placeholder.com{$category}-{$id}",
-            "price" => rand(1000, 5000)
-        ];
-    }
+try {
+    $db = new PDO($dsn, $db_user, $db_pass);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // 指定されたカテゴリのデータをLIMIT/OFFSETで取得
+    $stmt = $db->prepare("SELECT id, title, thumbnail, price FROM home_games WHERE category = :cat LIMIT :limit OFFSET :offset");
+    $stmt->bindValue(':cat', $category, PDO::PARAM_STR);
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+    
+    $games = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // 次のページがあるか件数チェック
+    $nextOffset = $page * $limit;
+    $checkStmt = $db->prepare("SELECT COUNT(*) FROM home_games WHERE category = :cat");
+    $checkStmt->execute([':cat' => $category]);
+    $total = $checkStmt->fetchColumn();
+    $hasMore = $nextOffset < $total;
+
+    echo json_encode([
+        "page" => $page,
+        "hasMore" => $hasMore,
+        "games" => $games
+    ]);
+
+} catch (PDOException $e) {
+    echo json_encode(["page" => $page, "hasMore" => false, "games" => []]);
 }
-
-// フロントエンドが受け取るJSONの構造
-$response = [
-    "page" => $page,
-    "hasMore" => $hasMore,
-    "games" => $games
-];
-
-echo json_encode($response);
-

@@ -1,40 +1,55 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
-// 本来は $_GET['id'] を受けてDB検索しますが、一先ず固定のダミーデータを返します
-$response = [
-    "title" => "レイヤード・ストーリー",
-    "category" => "SFサスペンス",
-    "release_date" => "2026年6月1日",
-    "description" => "近未来の渋谷を舞台に、量子記憶デバイス『レイヤー』を巡る陰謀に巻き込まれた主人公たちの運命を描くビジュアルノベル。あなたの選択が、無数の世界線を紡ぎ出す。フルボイス＆マルチエンディング対応。",
-    
-    // カルーセル用の画像リスト
-    "images" => [
-        "https://placeholder.com",
-        "https://placeholder.com",
-        "https://placeholder.com",
-        "https://placeholder.com"
-    ],
-    
-    // アチーブメント
-    "achievements" => [
-        ["icon" => "👁️‍🗨️", "title" => "観測の始まり", "desc" => "プロローグをクリアした"],
-        ["icon" => "🧩", "title" => "論理的思考", "desc" => "推理フェーズでノーミスクリア"],
-        ["icon" => "⏳", "title" => "シュタインズの扉", "desc" => "すべてのエンディングを回収"]
-    ],
-    
-    // DLC
-    "dlcs" => [
-        ["title" => "追加シナリオ：外伝『レイター・コード』", "price" => "¥1,200"],
-        ["title" => "デジタルサウンドトラック＆アートブック", "price" => "¥800"]
-    ],
-    
-    // お知らせ
-    "news" => [
-        "【6/11】アップデートVer.1.02を配信しました",
-        "【6/05】公式ファンアートコンテスト開催決定！",
-        "【6/01】本日配信開始！記念壁紙配布中"
-    ]
-];
+$gameId = isset($_GET['id']) ? (int)$_GET['id'] : 1; // デフォルトは1
 
-echo json_encode($response);
+$dsn = 'mysql:host=localhost;dbname=gameportal;charset=utf8mb4';
+$db_user = 'root';
+$db_pass = '';
+
+try {
+    $db = new PDO($dsn, $db_user, $db_pass);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // 1. 親テーブル (home_games) から基本情報を取得
+    $stmt = $db->prepare("SELECT title, category FROM home_games WHERE id = :id");
+    $stmt->execute([':id' => $gameId]);
+    $gameBase = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$gameBase) {
+        echo json_encode(["error" => "ゲームが見つかりません。"]);
+        exit;
+    }
+
+    // 2. 各種子テーブルからデータを個別に取得 (1対多のセオリー通りの安全な実装)
+    $imgStmt = $db->prepare("SELECT image_url FROM game_images WHERE game_id = :id");
+    $imgStmt->execute([':id' => $gameId]);
+    $images = $imgStmt->fetchAll(PDO::FETCH_COLUMN); // URLの配列として取得
+
+    $achStmt = $db->prepare("SELECT icon, title, `desc` FROM game_achievements WHERE game_id = :id");
+    $achStmt->execute([':id' => $gameId]);
+    $achievements = $achStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $dlcStmt = $db->prepare("SELECT title, price FROM game_dlcs WHERE game_id = :id");
+    $dlcStmt->execute([':id' => $gameId]);
+    $dlcs = $dlcStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $newsStmt = $db->prepare("SELECT content FROM game_news WHERE game_id = :id");
+    $newsStmt->execute([':id' => $gameId]);
+    $news = $newsStmt->fetchAll(PDO::FETCH_COLUMN);
+
+    // 3. すべてのデータを統合したレスポンスJSONの作成
+    echo json_encode([
+        "title" => $gameBase['title'],
+        "category" => $gameBase['category'] . " (MySQL連動)",
+        "release_date" => "2026年6月12日",
+        "description" => "この詳細情報は、MySQLデータベースの複数の関連テーブルからリレーションシップに基づいて動的に生成されています。バニラJSのfetchにより、ページの部分更新が実現されています。",
+        "images" => $images,
+        "achievements" => $achievements,
+        "dlcs" => $dlcs,
+        "news" => $news
+    ]);
+
+} catch (PDOException $e) {
+    echo json_encode(["error" => "DBエラーが発生しました。"]);
+}

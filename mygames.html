@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>マイゲーム | ADVゲームポータル</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <!-- [ヘッダー] -->
@@ -24,7 +26,7 @@
     <!-- [メインコンテンツ] -->
     <main class="container">
         <h2>プレイ中のゲーム</h2>
-        
+
         <!-- マイゲーム一覧のグリッド表示 -->
         <div class="mygames-grid" id="mygamesGrid">
             <!-- JSでプレイ中のゲームカードを挿入 -->
@@ -38,28 +40,40 @@
             gap: 20px;
             margin-top: 20px;
         }
+
         .mygame-card {
             background: #1f1f1f;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
+
         .mygame-card img {
             width: 100%;
             height: 160px;
             object-fit: cover;
         }
+
         .mygame-status {
             padding: 15px;
         }
-        .mygame-status h3 { margin: 0 0 10px 0; font-size: 1.1rem; }
+
+        .mygame-status h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+        }
+
         .playtime {
             font-size: 0.9rem;
             color: #aaa;
             display: flex;
             justify-content: space-between;
         }
-        .playtime span { color: #e50914; font-weight: bold; }
+
+        .playtime span {
+            color: #e50914;
+            font-weight: bold;
+        }
     </style>
 
     <script>
@@ -68,20 +82,31 @@
             const userMenu = document.getElementById('userMenu');
 
             try {
-                // マイゲームデータ（セッション確認含む）をAPIから取得
+                // APIからデータを取得
                 const response = await fetch('api/mygames.php');
                 const data = await response.json();
 
-                // ログインしていない場合はログイン画面へ強制リダイレクト
+                // 未ログインならログイン画面へ強制リダイレクト
                 if (!data.authenticated) {
                     window.location.href = 'login.html';
                     return;
                 }
 
-                // ヘッダーにユーザー名を表示
-                userMenu.textContent = `👤 ${data.username}`;
+                // ヘッダーにユーザー名とログアウトボタンを表示（ホーム画面と同じ仕様）
+                userMenu.innerHTML = `
+            <span style="margin-right: 15px;">👤 ${data.username}</span>
+            <button id="logoutBtn" style="background:none; border:1px solid #666; color:#aaa; padding:4px 8px; border-radius:4px; cursor:pointer;">ログアウト</button>
+        `;
 
-                // ゲーム一覧の描画
+                document.getElementById('logoutBtn').addEventListener('click', async () => {
+                    const res = await fetch('api/logout.php');
+                    const logoutData = await res.json();
+                    if (logoutData.success) {
+                        window.location.href = 'login.html'; // ログアウトしたらログイン画面へ
+                    }
+                });
+
+                // MySQLから取得したゲーム一覧の描画
                 if (data.games.length === 0) {
                     grid.innerHTML = '<p style="color:#aaa;">プレイ中のゲームはありません。</p>';
                     return;
@@ -91,15 +116,15 @@
                     const card = document.createElement('div');
                     card.className = 'mygame-card';
                     card.innerHTML = `
-                        <img src="${game.thumbnail}" alt="">
-                        <div class="mygame-status">
-                            <h3>${game.title}</h3>
-                            <div class="playtime">
-                                <span>ステータス: プレイ中</span>
-                                <div>プレイ時間: <span>${game.play_time} 時間</span></div>
-                            </div>
-                        </div>
-                    `;
+                <img src="${game.thumbnail}" alt="">
+                <div class="mygame-status">
+                    <h3>${game.title}</h3>
+                    <div class="playtime">
+                        <span>ステータス: プレイ中</span>
+                        <div>プレイ時間: <span>${game.play_time} 時間</span></div>
+                    </div>
+                </div>
+            `;
                     grid.appendChild(card);
                 });
 
@@ -107,6 +132,8 @@
                 grid.innerHTML = '<p style="color:#ff3838;">データの取得に失敗しました。</p>';
             }
         });
+
     </script>
 </body>
+
 </html>

@@ -55,6 +55,7 @@ body {
     gap: 15px;
     padding: 10px 0;
     scroll-behavior: smooth;
+    align-items: flex-start;
 }
 .scroll-row::-webkit-scrollbar {
     height: 8px;
@@ -71,12 +72,28 @@ body {
     border-radius: 4px;
     overflow: hidden;
 }
+
+/*  【追記1】カード内のaタグをブロック化して、高さのガタつきを完全に抑え込む */
+.game-card a {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+}
+
 .game-card img {
     width: 100%;
     height: 120px;
     object-fit: cover;
+    display: block;     /* 【追記2】画像下部に生まれる見えない謎の隙間（ベースラインの余白）を消す */
 }
-
+.game-card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    display: block; /* 👈 【追記2】画像下部に生まれる見えない謎の隙間（ベースラインの余白）を消す */
+}
 /* [style.css の既存の .featured-card 周りを以下に差し替え、または追記] */
 
 .featured-card {
@@ -145,17 +162,14 @@ body {
     color: #666;
 }
 
-/* 既存のstyle.cssの末尾に追加 */
 .loading-trigger {
     min-width: 50px;
-    height: 120px;
+    height: 175px;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: transparent; /* 開発中は #333 にすると目印が見えてデバッグしやすいです */
 }
-
-/* [style.css の末尾に追加] */
 
 .ranking-header {
     display: flex;

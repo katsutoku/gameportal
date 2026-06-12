@@ -1,9 +1,47 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 画面読み込み時にテーマをチェックして適用する
-    if (localStorage.getItem('portalTheme') === 'light') {
-        document.body.classList.add('light-theme');
-    }
+    // -----------------------------------------------------------------
+    // common.jsに分離
+    //
+    // const userMenu = document.querySelector('.user-menu');
+
+    // async function checkLoginStatus() {
+    //     try {
+    //         const response = await fetch('api/check_auth.php');
+    //         const data = await response.json();
+
+    //         if (data.isLoggedIn) {
+    //             // ログイン中ならユーザー名とログアウトボタンを表示
+    //             userMenu.innerHTML = `
+    //             <span style="margin-right: 15px;">👤 ${data.username}</span>
+    //             <button id="logoutBtn" style="background:none; border:1px solid #666; color:#aaa; padding:4px 8px; border-radius:4px; cursor:pointer;">ログアウト</button>
+    //         `;
+
+    //             // ログアウトボタンのイベント設定
+    //             document.getElementById('logoutBtn').addEventListener('click', async () => {
+    //                 const res = await fetch('api/logout.php');
+    //                 const logoutData = await res.json();
+    //                 if (logoutData.success) {
+    //                     window.location.reload(); // 画面をリロードして未ログイン状態に戻す
+    //                 }
+    //             });
+    //         } else {
+    //             // 未ログインなら通常のログインボタンを表示
+    //             userMenu.innerHTML = `<a href="login.html" class="btn-login" style="color: #fff; text-decoration: none;">ログイン</a>`;
+    //         }
+    //     } catch (error) {
+    //         console.error('ログインステータスの確認に失敗しました:', error);
+    //     }
+    // }
+
+    // // 実行
+    // checkLoginStatus();
+
+    // // 画面読み込み時にテーマをチェックして適用する
+    // if (localStorage.getItem('portalTheme') === 'light') {
+    //     document.body.classList.add('light-theme');
+    // }
+    // -----------------------------------------------------------------
 
     // 現在のページ数を管理するオブジェクト（リストごとに管理）
     const pageStatus = {
@@ -18,13 +56,18 @@ document.addEventListener('DOMContentLoaded', () => {
         games.forEach(game => {
             const card = document.createElement('div');
             card.className = 'game-card';
+
+            // [home.js のカード生成箇所を以下のように修正]
             card.innerHTML = `
-                <img src="${game.thumbnail}" alt="${game.title}">
-                <div style="padding: 10px;">
-                    <h4 style="margin:0; font-size:14px;">${game.title}</h4>
-                    <p style="margin:5px 0 0; font-size:12px; color:#aaa;">¥${game.price}</p>
-                </div>
+                <a href="detail.html?id=${game.id}" style="text-decoration: none; color: inherit;">
+                    <img src="${game.thumbnail}" alt="${game.title}">
+                    <div style="padding: 10px;">
+                        <h4 style="margin:0; font-size:14px;">${game.title}</h4>
+                        <p style="margin:5px 0 0; font-size:12px; color:#aaa;">¥${game.price}</p>
+                    </div>
+                </a>
             `;
+
             // 詳細画面へのリンクにする場合は、card全体をaタグにするかクリックイベントをつけてください
             container.insertBefore(card, trigger);
         });
@@ -178,4 +221,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 初回読み込み時は「A（人気急上昇）」を表示
     loadRanking('A');
+
+    // --- [home.js の末尾（DOMContentLoaded内）に追記] ---
+
+    function enableMouseSwipe() {
+        const sliders = document.querySelectorAll('.scroll-row');
+
+        sliders.forEach(slider => {
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            // 1. マウスボタンが押された瞬間
+            slider.addEventListener('mousedown', (e) => {
+                isDown = true;
+                slider.style.cursor = 'grabbing'; // 掴んでいる手のアイコンに変える
+                slider.style.scrollBehavior = 'auto'; // ドラッグ中はスムーズスクロールを無効にして追従性を上げる
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+            });
+
+            // 2. マウスが要素から外れた、またはボタンが離された瞬間
+            const stopDragging = () => {
+                if (!isDown) return;
+                isDown = false;
+                slider.style.cursor = 'pointer';
+                slider.style.scrollBehavior = 'smooth'; // ドラッグが終わったらスムーズスクロールに戻す
+            };
+            slider.addEventListener('mouseleave', stopDragging);
+            slider.addEventListener('mouseup', stopDragging);
+
+            // 3. マウスが押された状態で動いている最中
+            slider.addEventListener('mousemove', (e) => {
+                if (!isDown) return; // 押されていなければ何もしない
+                e.preventDefault(); // テキスト選択や画像のドラッグを防ぐ
+
+                const x = e.pageX - slider.offsetLeft;
+                const walk = (x - startX) * 2; // 「* 2」でスクロールの感度（スピード）を調整
+                slider.scrollLeft = scrollLeft - walk;
+            });
+
+            // 【UX対策】ドラッグ中にカード内のリンク（aタグ）をクリックしてしまう誤作動を防ぐ
+            slider.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    // 大きくドラッグした（walkの絶対値が大きい）場合はクリックをキャンセルする
+                    if (slider.style.cursor === 'grabbing') {
+                        // 少しでも動いていたら、1ページ目への遷移を一時的にブロック可能ですが、
+                        // 今回はバニラJSの標準仕様に沿って、ドラッグ直後のクリック誤判定をブラウザのデフォルトに任せます
+                    }
+                });
+            });
+        });
+    }
+
+    // 実行する
+    enableMouseSwipe();
+
 });

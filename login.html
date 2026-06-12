@@ -82,7 +82,7 @@
                 // PHPの認証APIへ非同期通信
                 const response = await fetch('api/auth.php', {
                     method: 'POST',
-                    headers: { 'Content-Type: application/json' },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
                 const data = await response.json();

@@ -11,27 +11,21 @@ if (empty($username) || empty($password)) {
     exit;
 }
 
-$db_file = __DIR__ . '/users_db.json';
-
-if (!file_exists($db_file)) {
-    echo json_encode(["success" => false, "message" => "データベースが初期化されていません。"]);
-    exit;
-}
+// 本物のMySQLへの接続設定
+$dsn = 'mysql:host=localhost;dbname=gameportal;charset=utf8mb4';
+$db_user = 'root';
+$db_pass = '';
 
 try {
-    // 1. ファイル（DB）から全ユーザーのデータを読み込む
-    $users = json_decode(file_get_contents($db_file), true);
+    $db = new PDO($dsn, $db_user, $db_pass);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // 2. SQLの 「WHERE username = :username」 を配列検索で完全再現
-    $matched_user = null;
-    foreach ($users as $user) {
-        if ($user['username'] === $username) {
-            $matched_user = $user;
-            break;
-        }
-    }
+    // SQLインジェクションを防ぐ安全なクエリ実行
+    $stmt = $db->prepare("SELECT * FROM users WHERE username = :username");
+    $stmt->execute([':username' => $username]);
+    $matched_user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // 3. パスワードの安全な照合（本物のDB実装と全く同じ暗号化ロジック）
+    // パスワードの安全な照合
     if ($matched_user && password_verify($password, $matched_user['password_hash'])) {
         // ログイン成功：セッションに保存
         $_SESSION['user_id'] = $matched_user['id'];
@@ -41,6 +35,6 @@ try {
     } else {
         echo json_encode(["success" => false, "message" => "ユーザー名またはパスワードが正しくありません。"]);
     }
-} catch (Exception $e) {
+} catch (PDOException $e) {
     echo json_encode(["success" => false, "message" => "データ処理エラーが発生しました。"]);
 }

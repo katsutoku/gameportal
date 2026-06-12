@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>設定 | ADVゲームポータル</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- [ヘッダー] -->
+    <header class="main-header">
+        <div class="logo">🎮 ADV Portal</div>
+        <nav class="nav-menu">
+            <a href="index.html">ホーム</a>
+            <a href="mygames.html">マイゲーム</a>
+            <a href="settings.html" class="active">設定</a>
+        </nav>
+    </header>
+
+    <!-- [メインコンテンツ] -->
+    <main class="container">
+        <h2>ポータル設定</h2>
+
+        <div class="settings-card">
+            <h3>表示設定</h3>
+            <div class="setting-item">
+                <div>
+                    <div class="setting-title">カラーテーマ</div>
+                    <div class="setting-desc">サイト全体の配色を切り替えます。</div>
+                </div>
+                <!-- テーマ切り替えセレクトボックス -->
+                <select id="themeSelect" class="setting-control">
+                    <option value="dark">ダークモード (デフォルト)</option>
+                    <option value="light">ライトモード</option>
+                </select>
+            </div>
+
+            <div class="setting-item">
+                <div>
+                    <div class="setting-title">ホバー動画の自動再生</div>
+                    <div class="setting-desc">ホーム画面で動画を自動再生するかどうか。</div>
+                </div>
+                <input type="checkbox" id="autoplayCheck" class="setting-control-check" checked>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <h3>アカウント設定</h3>
+            <div class="setting-item">
+                <div>
+                    <div class="setting-title">ログインステータス</div>
+                    <div class="setting-desc" id="loginStatusText">確認中...</div>
+                </div>
+                <button id="logoutBtn" class="btn-secondary">ログアウト</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 設定画面専用の追加スタイル -->
+    <style>
+        .settings-card {
+            background: #1f1f1f;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        .settings-card h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .setting-item:last-child { border-bottom: none; }
+        .setting-title { font-weight: bold; font-size: 1rem; }
+        .setting-desc { font-size: 0.85rem; color: #aaa; margin-top: 4px; }
+        
+        /* コントロール部品 */
+        .setting-control {
+            background: #333;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+        .setting-control-check {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .btn-secondary {
+            background: #444;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-secondary:hover { background: #555; }
+
+        /* 【重要】ライトモード用のグローバルスタイル（JSでbodyに付与する用） */
+        body.light-theme {
+            background-color: #f4f4f9;
+            color: #141414;
+        }
+        body.light-theme .main-header { background-color: #fff; border-bottom: 1px solid #ddd; }
+        body.light-theme .main-header .logo { color: #141414; }
+        body.light-theme .nav-menu a { color: #666; }
+        body.light-theme .nav-menu a.active { color: #e50914; }
+        body.light-theme .settings-card { background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        body.light-theme .setting-item { border-bottom-color: #eee; }
+        body.light-theme .setting-control { background: #fff; color: #141414; border-color: #ccc; }
+    </style>
+
+    <!-- 設定画面のロジック（テーマ保存機能） -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeSelect = document.getElementById('themeSelect');
+            const loginStatusText = document.getElementById('loginStatusText');
+
+            // --- ⚙️ テーマ切り替えロジック (LocalStorage) ---
+            // 1. ブラウザの記憶から現在のテーマを読み込んで反映
+            const savedTheme = localStorage.getItem('portalTheme') || 'dark';
+            themeSelect.value = savedTheme;
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+            }
+
+            // 2. セレクトボックスが変更されたら記憶を上書きして反映
+            themeSelect.addEventListener('change', (e) => {
+                const selected = e.target.value;
+                localStorage.setItem('portalTheme', selected);
+
+                if (selected === 'light') {
+                    document.body.classList.add('light-theme');
+                } else {
+                    document.body.classList.remove('light-theme');
+                }
+            });
+
+            // --- ⚙️ 模擬ログイン状態の表示 ---
+            // 本来はセッションを確認しますが、一先ずフロント側での仮表示
+            loginStatusText.textContent = "管理者アカウント (admin) でログイン中";
+        });
+    </script>
+</body>
+</html>

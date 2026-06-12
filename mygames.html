@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マイゲーム | ADVゲームポータル</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- [ヘッダー] -->
+    <header class="main-header">
+        <div class="logo">🎮 ADV Portal</div>
+        <nav class="nav-menu">
+            <a href="index.html">ホーム</a>
+            <a href="mygames.html" class="active">マイゲーム</a>
+            <a href="settings.html">設定</a>
+        </nav>
+        <div class="user-menu" id="userMenu">
+            <!-- JSでユーザー名を表示 -->
+        </div>
+    </header>
+
+    <!-- [メインコンテンツ] -->
+    <main class="container">
+        <h2>プレイ中のゲーム</h2>
+        
+        <!-- マイゲーム一覧のグリッド表示 -->
+        <div class="mygames-grid" id="mygamesGrid">
+            <!-- JSでプレイ中のゲームカードを挿入 -->
+        </div>
+    </main>
+
+    <style>
+        .mygames-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .mygame-card {
+            background: #1f1f1f;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .mygame-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+        .mygame-status {
+            padding: 15px;
+        }
+        .mygame-status h3 { margin: 0 0 10px 0; font-size: 1.1rem; }
+        .playtime {
+            font-size: 0.9rem;
+            color: #aaa;
+            display: flex;
+            justify-content: space-between;
+        }
+        .playtime span { color: #e50914; font-weight: bold; }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const grid = document.getElementById('mygamesGrid');
+            const userMenu = document.getElementById('userMenu');
+
+            try {
+                // マイゲームデータ（セッション確認含む）をAPIから取得
+                const response = await fetch('api/mygames.php');
+                const data = await response.json();
+
+                // ログインしていない場合はログイン画面へ強制リダイレクト
+                if (!data.authenticated) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // ヘッダーにユーザー名を表示
+                userMenu.textContent = `👤 ${data.username}`;
+
+                // ゲーム一覧の描画
+                if (data.games.length === 0) {
+                    grid.innerHTML = '<p style="color:#aaa;">プレイ中のゲームはありません。</p>';
+                    return;
+                }
+
+                data.games.forEach(game => {
+                    const card = document.createElement('div');
+                    card.className = 'mygame-card';
+                    card.innerHTML = `
+                        <img src="${game.thumbnail}" alt="">
+                        <div class="mygame-status">
+                            <h3>${game.title}</h3>
+                            <div class="playtime">
+                                <span>ステータス: プレイ中</span>
+                                <div>プレイ時間: <span>${game.play_time} 時間</span></div>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+            } catch (error) {
+                grid.innerHTML = '<p style="color:#ff3838;">データの取得に失敗しました。</p>';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,5 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    // 画面読み込み時にテーマをチェックして適用する
+    if (localStorage.getItem('portalTheme') === 'light') {
+        document.body.classList.add('light-theme');
+    }
+
     // 現在のページ数を管理するオブジェクト（リストごとに管理）
     const pageStatus = {
         'A': { currentPage: 1, isLoading: false, hasMore: true },

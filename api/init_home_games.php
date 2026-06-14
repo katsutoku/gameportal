@@ -41,7 +41,7 @@ try {
                 $stmt->execute([
                     ':cat' => $cat,
                     ':title' => "【MySQL】ADVタイトル {$cat}-#{$i}",
-                    ':thumb' => "https://placeholder.com{$cat}-{$i}",
+                    ':thumb' => "https://placehold.jp/200x120.jpg?text={$cat}-{$i}",
                     ':price' => rand(1500, 5000)
                 ]);
             }
@@ -60,7 +60,7 @@ try {
                     ':type' => $key,
                     ':num' => $r,
                     ':title' => "【MySQL/解禁】{$name} 第{$r}位",
-                    ':thumb' => "https://placeholder.com{$key}-{$r}",
+                    ':thumb' => "https://placehold.jp/800x480.jpg?text={$key}-{$r}",
                     ':score' => number_format(5.0 - ($r * 0.1), 1),
                     ':price' => $r == 3 ? '無料' : '¥' . rand(2000, 4000),
                     ':change' => rand(-2, 2)

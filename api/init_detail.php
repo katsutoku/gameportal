@@ -46,9 +46,9 @@ try {
     if ($imgCount == 0) {
         // 画像データの投入
         $imgStmt = $db->prepare("INSERT INTO game_images (game_id, image_url) VALUES (1, :url)");
-        $imgStmt->execute([':url' => 'https://placeholder.com']);
-        $imgStmt->execute([':url' => 'https://placeholder.com']);
-        $imgStmt->execute([':url' => 'https://placeholder.com']);
+        $imgStmt->execute([':url' => 'https://placehold.jp/1200x675.jpg']);
+        $imgStmt->execute([':url' => 'https://placehold.jp/1200x675.jpg']);
+        $imgStmt->execute([':url' => 'https://placehold.jp/1200x675.jpg']);
 
         // 実績データの投入
         $achStmt = $db->prepare("INSERT INTO game_achievements (game_id, icon, title, `desc`) VALUES (1, :icon, :title, :desc)");

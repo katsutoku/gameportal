@@ -30,14 +30,14 @@ try {
         $insert->execute([
             ':uid' => 1,
             ':title' => 'レイヤード・ストーリー (MySQL版)',
-            ':thumb' => 'https://placeholder.com',
+            ':thumb' => 'https://placehold.jp/200x200.jpg',
             ':pt' => 24.5
         ]);
 
         $insert->execute([
             ':uid' => 1,
             ':title' => 'シンギュラリティ・コード (MySQL版)',
-            ':thumb' => 'https://placeholder.com',
+            ':thumb' => 'https://placehold.jp/200x200.jpg',
             ':pt' => 8.2
         ]);
         

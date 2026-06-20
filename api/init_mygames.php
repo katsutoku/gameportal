@@ -1,9 +1,8 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
 
-$dsn = 'mysql:host=localhost;dbname=gameportal;charset=utf8mb4';
-$db_user = 'root';
-$db_pass = '';
+// 共通ファイルを読み込む（これだけで $pdo や各変数が使えるようになります）
+require_once __DIR__ . '/db_config.php';
 
 try {
     $db = new PDO($dsn, $db_user, $db_pass);

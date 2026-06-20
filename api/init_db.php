@@ -1,18 +1,19 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
 
-// XAMPPのMySQL（根本）への接続設定
-$dsn_init = 'mysql:host=localhost;charset=utf8mb4';
-$db_user = 'root';
-$db_pass = '';
+// 共通ファイルを読み込む（これだけで $pdo や各変数が使えるようになります）
+require_once __DIR__ . '/db_config.php';
+
+// 2. 安全のために英数字とアンダースコア以外を削除（セキュリティ対策）
+$safe_db_name = preg_replace('/[^a-zA-Z0-9_]/', '', $db_name);
 
 try {
     $db = new PDO($dsn_init, $db_user, $db_pass);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // 1. データベースがなければ自動作成
-    $db->exec("CREATE DATABASE IF NOT EXISTS gameportal CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;");
-    $db->exec("USE gameportal;");
+    $db->exec("CREATE DATABASE IF NOT EXISTS `{$safe_db_name}` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;");
+    $db->exec("USE `{$safe_db_name}`;");
 
     // 2. ユーザーテーブルの作成
     $sql = "CREATE TABLE IF NOT EXISTS users (

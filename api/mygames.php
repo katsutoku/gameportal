@@ -13,10 +13,8 @@ if (!isset($_SESSION['user_id'])) {
 
 $userId = $_SESSION['user_id'];
 
-// MySQLへの接続設定
-$dsn = 'mysql:host=localhost;dbname=gameportal;charset=utf8mb4';
-$db_user = 'root';
-$db_pass = '';
+// 共通ファイルを読み込む（これだけで $pdo や各変数が使えるようになります）
+require_once __DIR__ . '/db_config.php';
 
 try {
     $db = new PDO($dsn, $db_user, $db_pass);
@@ -26,7 +24,7 @@ try {
     $stmt = $db->prepare("SELECT title, thumbnail, play_time FROM user_games WHERE user_id = :user_id");
     $stmt->execute([':user_id' => $userId]);
     $myGames = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+    
     // 3. 結果を返却
     echo json_encode([
         "authenticated" => true,

@@ -46,7 +46,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // 現在のページ数を管理するオブジェクト（リストごとに管理）
     const pageStatus = {
         'A': { currentPage: 1, isLoading: false, hasMore: true },
-        'B': { currentPage: 1, isLoading: false, hasMore: true }
+        'B': { currentPage: 1, isLoading: false, hasMore: true },
+        'C': { currentPage: 1, isLoading: false, hasMore: true },
+        'D': { currentPage: 1, isLoading: false, hasMore: true },
+        'E': { currentPage: 1, isLoading: false, hasMore: true }
     };
 
     // ゲームカードを生成してDOMに追加する関数
@@ -114,8 +117,18 @@ document.addEventListener('DOMContentLoaded', () => {
             // トリガー要素が画面（または指定した範囲）に入った場合
             if (entry.isIntersecting) {
                 const trigger = entry.target;
-                const targetType = trigger.getAttribute('data-target'); // 'A' または 'B'
-                const listId = targetType === 'A' ? 'list-a' : 'list-b';
+                const targetType = trigger.getAttribute('data-target'); // 'A' or 'B' or 'C' or 'D' or 'E'
+                let listId;
+                switch(targetType){
+                    case 'A':   listId  = 'list-a'; break;
+                    case 'B':   listId  = 'list-b'; break;
+                    case 'C':   listId  = 'list-c'; break;
+                    case 'D':   listId  = 'list-d'; break;
+                    case 'E':   listId  = 'list-e'; break;
+                    default:
+                        listId  = 'list-none'; 
+                        break;                       
+                }
 
                 // 次のページを読み込む
                 loadNextPage(listId, targetType);
